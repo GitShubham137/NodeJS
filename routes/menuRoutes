@@ -1,0 +1,51 @@
+const express = require('express');
+const router = express.Router();
+const MenuItem = require('./../models/MenuItem')
+
+router.post('/', async (req, res) => {
+    try {
+        const data = req.body;  //The body parser stores the data of a new person in req.body
+        const newMenuItem = new MenuItem(data) 
+
+        const response = await newMenuItem.save()
+        res.status(200).json(response)
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).json({ err: 'Internal server error' })
+    }
+})
+
+router.get('/', async (req, res) => {
+    try {
+        const data = await MenuItem.find()
+        console.log('Data fetched sucessfully')
+        res.status(200).json(data)
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).json({ err: 'Internal server error' })
+    }
+})
+
+router.get('/:menuType', async (req, res) => {
+    try {
+        const menuType = req.params.menuType
+        if (menuType == 'Rice' || menuType == 'Biryani' || menuType == 'Idli' || menuType == 'Thali' || menuType == 'Dosa') {
+            const response = await MenuItem.find({ name: menuType })
+            console.log('Data fetched sucessfully')
+            res.status(200).json(response)
+        }
+        else {
+            console.log('Invalid work type')
+            res.status(404).json({ err: 'Invalid work type' })
+        }
+    }
+
+    catch (err) {
+        console.log(err)
+        res.status(404).json({ err: 'Internal server error' })
+    }
+})
+
+module.exports = router;
